@@ -20,12 +20,12 @@ function secret(name, why) {
   if (v.length < 32) {
     if (PROD) throw new Error(`${name} (32+ chars) is required in production.`);
     v = randomBytes(32).toString('hex');
-    console.warn(`[bsafety] no ${name}: using a random one, so ${why} until this process restarts.`);
+    console.warn(`[bsafety] no ${name}: using a random one, so ${why} when this process restarts.`);
   }
   return v;
 }
-const sessionSecret = secret('SESSION_SECRET', 'reviewer sign-ins last only');
-const ipSalt = secret('IP_HASH_SALT', 'per-IP report limits reset');
+const sessionSecret = secret('SESSION_SECRET', 'reviewer sign-ins end');
+const ipSalt = secret('IP_HASH_SALT', 'per-IP report counts reset');
 
 // REVIEWER_KEYS: identity keys (66 hex) of the named human reviewers. Nobody else can use the queue.
 const reviewerKeys = list(env.REVIEWER_KEYS).map((k) => k.toLowerCase());

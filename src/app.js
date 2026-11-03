@@ -81,6 +81,7 @@ const itemId = (v, { required = true } = {}) => {
   if (typeof v !== 'string' || !ITEM.test(v)) fail(400, 'itemId must be 1-128 characters: letters, digits and . _ : @ -');
   return v;
 };
+const pathId = (raw) => { let v; try { v = decodeURIComponent(raw); } catch { fail(400, 'Bad item id.'); } return itemId(v); };
 const contact = (v, { required = false } = {}) => {
   const c = str(v, 254, 'contact', { required });
   if (c && !EMAILISH.test(c)) fail(400, 'contact must be an email address.');
@@ -370,7 +371,7 @@ export function createApp(cfg) {
   // ---- the hidden check: marketplaces call this before serving an item (one, or a batch of up to 500)
   route('GET', /^\/v1\/hidden\/([a-z]+)\/([^/]+)$/, async (req, [svcRaw, idRaw]) => {
     limit(req, 'hidden', 6000, 60_000);
-    const svc = service(svcRaw), item = itemId(decodeURIComponent(idRaw));
+    const svc = service(svcRaw), item = pathId(idRaw);
     return [200, { service: svc, itemId: item, hidden: isHidden(svc, item) }];
   }, { public: true });
   route('POST', /^\/v1\/hidden$/, async (req) => {
@@ -404,7 +405,7 @@ export function createApp(cfg) {
 
   // ---- marketplace servers
   route('PUT', /^\/v1\/items\/([a-z]+)\/([^/]+)$/, async (req, [svcRaw, idRaw]) => {
-    const svc = service(svcRaw), item = itemId(decodeURIComponent(idRaw));
+    const svc = service(svcRaw), item = pathId(idRaw);
     if (req.service !== svc) fail(403, 'That token is for another service.');
     const b = await readJson(req);
     const seller = b.seller == null ? null : String(b.seller).toLowerCase();
@@ -420,7 +421,7 @@ export function createApp(cfg) {
   }, { service: true });
 
   route('GET', /^\/v1\/items\/([a-z]+)\/([^/]+)$/, async (req, [svcRaw, idRaw]) => {
-    const svc = service(svcRaw), item = itemId(decodeURIComponent(idRaw));
+    const svc = service(svcRaw), item = pathId(idRaw);
     if (req.service !== svc) fail(403, 'That token is for another service.');
     const it = S.items.get.get(svc, item);
     const hidden = isHidden(svc, item);
@@ -430,7 +431,7 @@ export function createApp(cfg) {
 
   // Screening before display (§7.2). Body: the image bytes (image/png or image/jpeg). 200 only when screened.
   route('POST', /^\/v1\/screen\/([a-z]+)\/([^/]+)$/, async (req, [svcRaw, idRaw]) => {
-    const svc = service(svcRaw), item = itemId(decodeURIComponent(idRaw));
+    const svc = service(svcRaw), item = pathId(idRaw);
     if (req.service !== svc) fail(403, 'That token is for another service.');
     const buf = await readBody(req, cfg.screenMaxBytes || 40 * 2 ** 20);
     if (!isPng(buf) && !isJpeg(buf)) fail(415, 'Send the image as PNG or JPEG.');
