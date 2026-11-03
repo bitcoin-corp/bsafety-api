@@ -1,0 +1,20 @@
+{
+  "name": "bsafety-api",
+  "private": true,
+  "type": "module",
+  "description": "Shared trust-and-safety service for bPhotosX, bDriveX and bMarketX: reports, auto-hide, review queue, action log, hash denylist, notices, screening gate.",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env.local src/server.js",
+    "start": "node src/server.js",
+    "test": "node test/unit.mjs && node test/e2e.mjs"
+  },
+  "dependencies": {
+    "@bsv/sdk": "2.8.10",
+    "@bwalletx/connect": "0.5.4",
+    "jpeg-js": "0.4.4"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}

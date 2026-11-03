@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>bSafety review</title>
+  <link rel="stylesheet" href="/review/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>bSafety review</h1>
+    <div class="who">
+      <span id="who"></span>
+      <button id="signin" type="button">Sign in with bWalletX</button>
+      <button id="signout" type="button" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <p class="care">Images open blurred. Unblur only as much as you need, and step away whenever you want to. Known-hash matches never show an image.</p>
+  <p id="err" class="err" hidden></p>
+
+  <main id="main" hidden>
+    <nav class="tabs" role="tablist">
+      <button type="button" data-tab="open" class="on">Open queue</button>
+      <button type="button" data-tab="quarantined">Hash matches</button>
+      <button type="button" data-tab="closed">Decided</button>
+      <button type="button" data-tab="log">Action log</button>
+    </nav>
+    <div class="cols">
+      <section id="list" aria-label="Cases"></section>
+      <section id="detail" aria-label="Case"><p class="muted">Choose a case.</p></section>
+    </div>
+  </main>
+
+  <script src="/review/connect.js"></script>
+  <script type="module" src="/review/app.js"></script>
+</body>
+</html>
