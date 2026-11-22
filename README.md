@@ -73,7 +73,7 @@ The denylist check is deliberately not public: a public "is this hash known?" en
 
 | Method and path | Body | Answer |
 |---|---|---|
-| `POST /v1/auth/challenge` | `{ identityKey }` | a challenge to sign in bWalletX (from a `REVIEW_ORIGINS` origin only) |
+| `POST /v1/auth/challenge` | `{ identityKey? }` | a challenge to sign in bWalletX (from a `REVIEW_ORIGINS` origin only; the key is optional, so the wallet can give key and signature in one sheet) |
 | `POST /v1/auth/verify` | `{ identityKey, nonce, signature }` | `{ token, identityKey, expiresAt }` (12 h), or `403` if the key isn't in `REVIEWER_KEYS` |
 | `POST /v1/auth/signout` | | `204` |
 | `GET /v1/review/cases?status=open\|quarantined\|closed` | | cases in §8.2 order: priority, then due-by. Each has `dueBy`, `overdue`, `viewable`, `ref` (null when not viewable) |

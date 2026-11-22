@@ -170,6 +170,15 @@ let T1, T2;
   ok(rs.status === 403, 'a valid signature from a wallet not in REVIEWER_KEYS is refused');
   const forged = await signIn(rev1, stranger.w);
   ok(forged.status === 401, "a signature from someone else's key is refused");
+  // connect 0.5.5+: a challenge with no key (key and signature in one wallet sheet) binds the key claimed at verify.
+  const keyless = async ({ w, key }, signer = w) => {
+    const c = await (await post('/v1/auth/challenge', {})).json();
+    const { signature } = await signer.createSignature({ protocolID: c.protocolID, keyID: c.keyID, counterparty: 'anyone', data: Array.from(new TextEncoder().encode(c.message)) });
+    return post('/v1/auth/verify', { identityKey: key, nonce: c.nonce, signature: Array.from(signature) });
+  };
+  ok((await keyless(rev1)).status === 200, 'a reviewer signs in from a challenge made without a key (one wallet sheet)');
+  ok((await keyless(rev1, stranger.w)).status === 401, "a keyless challenge refuses someone else's signature");
+  ok((await keyless(stranger)).status === 403, 'a keyless challenge still refuses a wallet not in REVIEWER_KEYS');
   ok((await call('GET', '/v1/review/cases')).status === 401, 'no token: 401');
   ok((await call('GET', '/v1/review/cases', { token: 'garbage.token' })).status === 401, 'junk token: 401');
   ok((await call('GET', '/v1/review/cases', { svc: 'bphotosx' })).status === 401, 'a service token cannot use the review queue');
